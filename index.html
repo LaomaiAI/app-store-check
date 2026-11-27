@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Store 上架合规自查 - 粘贴即查,10 秒出自查报告</title>
+<meta name="description" content="粘贴 App 名称、描述、订阅价格、权限说明,10 秒逐项对照 App Store 审核条款出自查报告与修复清单。纯静态页,内容不上传。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <h1>App Store 上架合规自查</h1>
+    <p class="subtitle">粘贴 App 名称、描述、订阅价格、权限说明,10 秒逐项对照苹果审核条款出自查报告与修复清单。确定性检查本地算出,判断不了的只列清单、不编结论。内容只在你的浏览器里运行,不会上传到任何服务器。</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel input-panel">
+    <div class="panel-head">
+      <h2>1. 粘贴上架资料</h2>
+      <span class="meta" id="inputMeta">0 项已填</span>
+    </div>
+
+    <label class="field-label" for="appName">App 名称 <span class="req">*</span></label>
+    <input class="text-input" id="appName" type="text" maxlength="60" placeholder="例如:晨读英语(30 个字符以内)">
+
+    <label class="field-label" for="subtitle">副标题</label>
+    <input class="text-input" id="subtitle" type="text" maxlength="60" placeholder="一句话介绍 App 是干什么的,别写价格与免费字样">
+
+    <label class="field-label" for="description">App 描述 <span class="req">*</span></label>
+    <textarea id="description" rows="7" spellcheck="false" placeholder="把提交给 App Store 的完整描述粘贴到这里,包括功能介绍、收费说明、联系方式。"></textarea>
+
+    <label class="field-label" for="subscription">订阅与内购说明</label>
+    <textarea id="subscription" rows="4" spellcheck="false" placeholder="订阅价格、周期、免费试用天数、自动续订与取消方式,例如:高级会员 ¥18/月,自动续订,可随时取消,首月免费试用 7 天。没有订阅或内购可留空。"></textarea>
+
+    <label class="field-label" for="permissions">权限与隐私说明</label>
+    <textarea id="permissions" rows="4" spellcheck="false" placeholder="申请了哪些权限、每个权限用来干什么、收集什么数据、是否共享给第三方、账号注销入口,例如:通知权限用于推送晨读提醒;相册权限用于保存生词卡片。"></textarea>
+
+    <label class="field-label" for="privacyUrl">隐私政策链接</label>
+    <input class="text-input" id="privacyUrl" type="text" placeholder="例如:https://example.com/privacy">
+
+    <div class="sample-row">
+      <span class="sample-label">试一试:</span>
+      <button class="btn btn-ghost" data-sample="good">合格示例</button>
+      <button class="btn btn-ghost" data-sample="bad">问题示例</button>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-primary" id="runBtn">开始自查</button>
+      <button class="btn" id="clearBtn">清空</button>
+      <span class="hint">按 Ctrl/Cmd + Enter 也可开始自查</span>
+    </div>
+  </section>
+
+  <section class="panel human-panel">
+    <div class="panel-head">
+      <h2>2. 人工核对清单</h2>
+      <span class="meta" id="humanMeta">11 项待确认</span>
+    </div>
+    <p class="section-note">下面这些静态页判断不了,须你自己逐项确认。勾选代表已确认,未勾选的会进报告的待确认清单。</p>
+    <ul class="human-list" id="humanList"></ul>
+  </section>
+
+  <section class="panel report-panel" id="reportPanel" hidden>
+    <div class="panel-head">
+      <h2>3. 自查报告</h2>
+      <span class="meta" id="reportMeta"></span>
+    </div>
+
+    <div class="score-card">
+      <div class="score-num"><span id="scoreNum">--</span><span class="score-unit">分</span></div>
+      <div class="score-info">
+        <div class="grade" id="gradeBadge">-</div>
+        <div class="score-sub" id="scoreSub"></div>
+        <div class="counts" id="countsRow"></div>
+      </div>
+    </div>
+
+    <div class="metrics" id="metricsGrid"></div>
+
+    <h3 class="section-title">确定性检查 <span class="tag tag-computed">本地算的</span></h3>
+    <p class="section-note">以下每一项都由粘贴的文字算出,带证据原文,可复核。点击分类可收起展开。</p>
+    <div id="checkGroups"></div>
+
+    <h3 class="section-title">人工核对结果 <span class="tag tag-model">须你自己确认</span></h3>
+    <p class="section-note">这些项静态页判断不了,只按你的勾选出结果,未确认的请在提交前逐项落实。</p>
+    <ul class="check-list" id="humanResultList"></ul>
+
+    <h3 class="section-title">导出报告</h3>
+    <div class="action-row">
+      <button class="btn btn-primary" id="copyMdBtn">复制报告 (Markdown)</button>
+      <button class="btn" id="downloadBtn">下载报告 (.md)</button>
+    </div>
+  </section>
+
+  <p class="toast" id="toast" hidden></p>
+
+  <section class="panel about-panel">
+    <h2>这份报告怎么算的</h2>
+    <ul class="about-list">
+      <li><strong>确定性检查(35 项):</strong>元数据 12 项、订阅与内购 8 项、隐私与权限 9 项、内容与设计 6 项。每项对照 Apple《App Store Review Guidelines》的具体条款,命中即给出证据原文与修复建议。</li>
+      <li><strong>人工核对(11 项):</strong>真机测试、演示账号、截图与预览、年龄分级、隐私标签、恢复购买等,静态页看不见,须你自己确认,本页不编造结论。</li>
+      <li><strong>评分:</strong>满分 100,不通过扣 10 分,警告扣 4 分;90 分以上 A,75 分以上 B,60 分以上 C,其余 D。评分只反映确定性检查结果。</li>
+      <li><strong>规则依据:</strong>Apple《App Store Review Guidelines》官网(developer.apple.com/app-store/review/guidelines/),核对日期 2026-11-27;另参考开源仓库 mjmirza/app-store-compliance(英文 playbook,125 条被拒模式),本工具为独立实现的中文网页版。</li>
+      <li><strong>隐私:</strong>纯静态页面,无后端、无统计,粘贴的内容只在你的浏览器里运行,关闭页面即消失。</li>
+      <li><strong>局限:</strong>本工具只检查你粘贴的文字,查不了二进制、截图、后端服务与真实运行表现;通过自查不等于过审,最终以苹果审核结果为准。条款编号以苹果官网为准,规则会随官网更新而过时。</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>App Store 上架合规自查 v1.0.0 · 静态页,本地运行 · 通过自查不等于过审,最终以苹果审核结果为准</p>
+  </div>
+</footer>
+
+<script src="checker.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

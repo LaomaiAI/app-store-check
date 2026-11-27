@@ -1,0 +1,1 @@
+{"description":"粘贴 App 名称、描述、订阅价格、权限说明,10 秒出逐项自查报告与修复清单。确定性检查本地算出,人工判断单独列出、不编造。纯静态页。","name":"app-store-check","private":true,"scripts":{"test":"node test/checker.test.js"},"version":"1.0.0"}
